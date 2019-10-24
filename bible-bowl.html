@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width">
+
+  <title>Buzzer System</title>
+
+  <link rel="stylesheet" href="bootstrap-4.3.1-dist/css/bootstrap.min.css">
+
+  <style>
+    body {
+      background-color: #1a2c53;
+      color: #1a2c53;
+    }
+
+    #players div {
+      background-color: #3e63b3;
+      width: 100px;
+      height: 100px;
+      display: inline-block;
+      visibility: hidden;
+      -webkit-transition: background-color 4s;
+      /* Safari */
+      transition: background-color 4s;
+    }
+
+    .buzzed {
+      background-color: red;
+    }
+
+    .enter {
+      background-color: #335191;
+      color: darkgray;
+      border: 4px;
+      border-color: white;
+      padding: 5px 10px;
+      margin-bottom: 16px;
+      font-size: 18px;
+    }
+
+    .scoreboard {
+      color: white;
+    }
+
+    .score {
+      color: goldenrod;
+    }
+
+    h3 {
+      font-size: 4em;
+      margin-bottom: 20px;
+    }
+
+    .scorebtn {
+      font-weight: 900;
+    }
+
+    #ct {
+      color: white;
+    }
+
+    .toss {
+    }
+  </style>
+</head>
+
+<script type="text/javascript">
+  var player1name, player2name, player3name, player4name, player5name, aScore, bScore, aScoreDisplay, bScoreDisplay;
+
+  function onload() {
+    player1name = document.getElementById('player1name');
+    player2name = document.getElementById('player2name');
+    player3name = document.getElementById('player3name');
+    player4name = document.getElementById('player4name');
+    player5name = document.getElementById('player5name');
+    aScore = 0;
+    bScore = 0;
+    aScoreDisplay = document.getElementById('aScore');
+    bScoreDisplay = document.getElementById('bScore');
+    aScoreDisplay.innerHTML = aScore;
+    bScoreDisplay.innerHTML = bScore;
+    aAdd = document.getElementById('aAdd');
+    bAdd = document.getElementById('bAdd');
+    aSubtract = document.getElementById('aSubtract');
+    bSubtract = document.getElementById('bSubtract');
+    buzz = document.getElementById('buzz');
+
+    aAdd.addEventListener('click', event => {
+      aScore = aScore + 5;
+      console.log(aScore);
+      aScoreDisplay.innerHTML = aScore;
+    });
+    bAdd.addEventListener('click', event => {
+      bScore = bScore + 5;
+      console.log(bScore);
+      bScoreDisplay.innerHTML = bScore;
+    });
+    aSubtract.addEventListener('click', event => {
+      aScore = aScore - 5;
+      console.log(aScore);
+      aScoreDisplay.innerHTML = aScore;
+    });
+    bSubtract.addEventListener('click', event => {
+      bScore = bScore - 5;
+      console.log(bScore);
+      bScoreDisplay.innerHTML = bScore;
+    });
+  }
+</script>
+
+<body onload="onload();">
+  <div class="container-fluid">
+    <p id="gamepad-info">Waiting for Gamepad.</p>
+    <div class="row">
+      <div class="col-1">
+        <input type="text" name="enter" class="enter form-control" value="" placeholder="Player 1" id="player1name" />
+        <input type="text" name="enter" class="enter form-control" value="" placeholder="Player 2" id="player2name" />
+        <input type="text" name="enter" class="enter form-control" value="" placeholder="Player 3" id="player3name" />
+        <input type="text" name="enter" class="enter form-control" value="" placeholder="Player 4" id="player4name" />
+        <input type="text" name="enter" class="enter form-control" value="" placeholder="Player 5" id="player5name" />
+      </div>
+      <div class="col">
+          <div class="row scoreboard text-center">
+              <div class="col">
+                <h2>Team A</h2>
+                <div class="score">
+                  <h3 id="aScore">0</h3>
+                  <button class="scorebtn btn btn-secondary" id="aAdd">+</button>
+                  <button class="scorebtn btn btn-secondary" id="aSubtract">-</button>
+                </div>
+              </div>
+              <div class="col">
+                  <button class="toss btn btn-primary mb-5">Next Question</button>
+                  <div id="ct"></div>
+              </div>
+              <div class="col">
+                <h2>Team B</h2>
+                <div class="score">
+                  <h3 id="bScore">1</h3>
+                  <button class="scorebtn btn btn-secondary" id="bAdd">+</button>
+                  <button class="scorebtn btn btn-secondary" id="bSubtract">-</button>
+                </div>
+              </div>
+            </div>
+           
+      </div>
+    </div>
+    
+
+    
+
+    <audio id="buzz" src="ring.wav" preload="auto"></audio>
+
+  </div>
+</body>
+
+<script src="jquery-3.4.1.min.js"></script>
+<script src="bootstrap-4.3.1-dist/js/bootstrap.bundle.js"></script>
+<script src="questions.js"></script>
+<script>
+  $(".toss").click(function (event) {
+    var q = questions[Math.floor(Math.random() * questions.length)];
+    $('#ct').html('<h4>' + q.stem + '</h4>');
+    $('#ct').append('<p>' + q.answer + '</p>');
+
+    //  });
+  });
+  var gamepadInfo = document.getElementById("gamepad-info");
+  var playerOne = document.getElementById("player-one");
+  var playerTwo = document.getElementById("player-two");
+  var playerThree = document.getElementById("player-three");
+  var p1 = document.getElementById("p1");
+  var start;
+  var a = 0;
+  var b = 0;
+  var rAF = window.requestAnimationFrame;
+  var rAFStop = window.cancelRequestAnimationFrame;
+  window.addEventListener("gamepadconnected", function () {
+    var gp = navigator.getGamepads()[0];
+    gamepadInfo.innerHTML = "Gamepad connected at index " + gp.index + ": " + gp.id + ". It has " + gp.buttons
+      .length + " buttons and " + gp.axes.length + " axes.";
+    gameLoop();
+  });
+  window.addEventListener("gamepaddisconnected", function () {
+    gamepadInfo.innerHTML = "Waiting for gamepad.";
+    rAFStop(start);
+  });
+  if (!('GamepadEvent' in window)) {
+    // No gamepad events available, poll instead.
+    var interval = setInterval(pollGamepads, 500);
+  }
+
+  function pollGamepads() {
+    var gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator
+      .webkitGetGamepads : []);
+    for (var i = 0; i < gamepads.length; i++) {
+      var gp = gamepads[i];
+      if (gp) {
+        gamepadInfo.innerHTML = "Gamepad connected at index " + gp.index + ": " + gp.id + ". It has " + gp.buttons
+          .length + " buttons and " + gp.axes.length + " axes.";
+        gameLoop();
+        clearInterval(interval);
+      }
+    }
+  }
+
+  function buttonPressed(b) {
+    if (typeof (b) == "object") {
+      return b.pressed;
+    }
+    return b == 1.0;
+  }
+
+  function gameLoop() {
+    var gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator
+      .webkitGetGamepads : []);
+    if (!gamepads)
+      return;
+    var gp = gamepads[0];
+    if (buttonPressed(gp.buttons[0])) {
+      buzz.play();
+      alert(player1name.value);
+    } else if (buttonPressed(gp.buttons[1])) {
+      buzz.play();
+      alert(player2name.value);
+    } else if (buttonPressed(gp.buttons[2])) {
+      buzz.play();
+      alert(player3name.value);
+    } else if (buttonPressed(gp.buttons[3])) {
+      buzz.play();
+      alert(player4name.value);
+    } else if (buttonPressed(gp.buttons[4])) {
+      buzz.play();
+      alert(player5name.value);
+    }
+    var start = rAF(gameLoop);
+
+    buzz.addEventListener('ended', function () {
+      $("#toggleButton").html("Play");
+    });
+
+
+
+  };
+</script>
+
+</html>
